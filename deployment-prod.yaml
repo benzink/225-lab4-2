@@ -10,7 +10,7 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    path:  /srv/nfs/roseaw         #local reference
+    path:  /srv/nfs/benzink         #local reference
     server: 10.48.10.140
   persistentVolumeReclaimPolicy: Retain
 ---
