@@ -1,15 +1,16 @@
-from flask import Flask, request, render_template_string, redirect, url_for
+from flask import Flask, request, render_template_string, redirect, url_for, flash, get_flashed_messages
 import sqlite3
 import os
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")  # for flash/session
 
 # Database file path
 DATABASE = '/nfs/demo.db'
 
 def get_db():
     db = sqlite3.connect(DATABASE)
-    db.row_factory = sqlite3.Row  # name-based column access
+    db.row_factory = sqlite3.Row
     return db
 
 def init_db():
@@ -27,18 +28,15 @@ def init_db():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    message = request.args.get('msg', '')  # read message from query param (after redirect)
-
     if request.method == 'POST':
         # Delete
         if request.form.get('action') == 'delete':
             contact_id = request.form.get('contact_id')
             db = get_db()
             db.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
-            db.commit()
-            db.close()
-            # Redirect so refresh doesn't resubmit
-            return redirect(url_for('index', msg='Contact deleted successfully.'))
+            db.commit(); db.close()
+            flash('Contact deleted successfully.')
+            return redirect(url_for('index'))
 
         # Add
         name = request.form.get('name')
@@ -46,13 +44,12 @@ def index():
         if name and phone:
             db = get_db()
             db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
-            db.commit()
-            db.close()
-            # Redirect so refresh doesn't resubmit
-            return redirect(url_for('index', msg='Contact added successfully.'))
+            db.commit(); db.close()
+            flash('Contact added successfully.')
+            return redirect(url_for('index'))
         else:
-            # Redirect with validation message too (prevents resubmit on refresh)
-            return redirect(url_for('index', msg='Missing name or phone number.'))
+            flash('Missing name or phone number.')
+            return redirect(url_for('index'))
 
     # GET: render page
     db = get_db()
@@ -62,9 +59,7 @@ def index():
     return render_template_string('''
         <!DOCTYPE html>
         <html>
-        <head>
-            <title>Contacts</title>
-        </head>
+        <head><title>Contacts</title></head>
         <body>
             <h2>Add Contacts</h2>
             <form method="POST" action="{{ url_for('index') }}">
@@ -74,7 +69,10 @@ def index():
                 <input type="text" id="phone" name="phone" required><br><br>
                 <input type="submit" value="Submit">
             </form>
-            {% if message %}<p>{{ message }}</p>{% endif %}
+
+            {% for m in get_flashed_messages() %}
+              <p>{{ m }}</p>
+            {% endfor %}
 
             {% if contacts %}
                 <table border="1">
@@ -102,9 +100,9 @@ def index():
             {% endif %}
         </body>
         </html>
-    ''', message=message, contacts=contacts)
+    ''', get_flashed_messages=get_flashed_messages, contacts=contacts)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    init_db()  # Initialize the database and table
+    init_db()
     app.run(debug=True, host='0.0.0.0', port=port)
