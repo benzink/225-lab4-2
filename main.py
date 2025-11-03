@@ -9,7 +9,7 @@ DATABASE = '/nfs/demo.db'
 
 def get_db():
     db = sqlite3.connect(DATABASE)
-    db.row_factory = sqlite3.Row  # This enables name-based access to columns
+    db.row_factory = sqlite3.Row  # name-based column access
     return db
 
 def init_db():
@@ -23,34 +23,42 @@ def init_db():
             );
         ''')
         db.commit()
+        db.close()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    message = ''  # Message indicating the result of the operation
+    message = request.args.get('msg', '')  # read message from query param (after redirect)
+
     if request.method == 'POST':
-        # Check if it's a delete action
+        # Delete
         if request.form.get('action') == 'delete':
             contact_id = request.form.get('contact_id')
             db = get_db()
             db.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
             db.commit()
-            message = 'Contact deleted successfully.'
-        else:
-            name = request.form.get('name')
-            phone = request.form.get('phone')
-            if name and phone:
-                db = get_db()
-                db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
-                db.commit()
-                message = 'Contact added successfully.'
-            else:
-                message = 'Missing name or phone number.'
+            db.close()
+            # Redirect so refresh doesn't resubmit
+            return redirect(url_for('index', msg='Contact deleted successfully.'))
 
-    # Always display the contacts table
+        # Add
+        name = request.form.get('name')
+        phone = request.form.get('phone')
+        if name and phone:
+            db = get_db()
+            db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
+            db.commit()
+            db.close()
+            # Redirect so refresh doesn't resubmit
+            return redirect(url_for('index', msg='Contact added successfully.'))
+        else:
+            # Redirect with validation message too (prevents resubmit on refresh)
+            return redirect(url_for('index', msg='Missing name or phone number.'))
+
+    # GET: render page
     db = get_db()
     contacts = db.execute('SELECT * FROM contacts').fetchall()
+    db.close()
 
-    # Display the HTML form along with the contacts table
     return render_template_string('''
         <!DOCTYPE html>
         <html>
@@ -59,14 +67,15 @@ def index():
         </head>
         <body>
             <h2>Add Contacts</h2>
-            <form method="POST" action="/">
+            <form method="POST" action="{{ url_for('index') }}">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name" required><br>
                 <label for="phone">Phone Number:</label><br>
                 <input type="text" id="phone" name="phone" required><br><br>
                 <input type="submit" value="Submit">
             </form>
-            <p>{{ message }}</p>
+            {% if message %}<p>{{ message }}</p>{% endif %}
+
             {% if contacts %}
                 <table border="1">
                     <tr>
@@ -79,7 +88,7 @@ def index():
                             <td>{{ contact['name'] }}</td>
                             <td>{{ contact['phone'] }}</td>
                             <td>
-                                <form method="POST" action="/">
+                                <form method="POST" action="{{ url_for('index') }}">
                                     <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="submit" value="Delete">
