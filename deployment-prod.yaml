@@ -48,7 +48,7 @@ spec:
         - name: roseaw-dockerhub
       containers:
         - name: flask
-          image: cithit/roseaw:latest
+          image: cithit/roseaw:latest    #your MiamiID
           ports:
             - containerPort: 5000
           volumeMounts:
