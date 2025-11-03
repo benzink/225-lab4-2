@@ -57,8 +57,8 @@ pipeline {
                 // Ensure the label accurately targets the correct pods.
                 def appPod = sh(script: "kubectl get pods -l app=flask -o jsonpath='{.items[0].metadata.name}'", returnStdout: true).trim()
                 // Execute command within the pod. 
-                sh "kubectl get pods"
                 sh "sleep 45"
+                sh "kubectl get pods"
                 sh "kubectl exec ${appPod} -- python3 data-gen.py"
                 }
             }
