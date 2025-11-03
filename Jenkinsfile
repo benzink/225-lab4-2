@@ -19,12 +19,14 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            steps {
+             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}", "-f Dockerfile.build .")
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-creds') {
+                        docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}")
+                    }
                 }
             }
-        }
+
 
         stage('Push Docker Image') {
             steps {
