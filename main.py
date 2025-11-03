@@ -247,7 +247,9 @@ def index():
         </ul>
       </nav>
 
-      <footer class="py-4 text-center text-secondary small">Flask Contacts Demo</footer>
+      <footer class="py-4 text-center text-secondary small">
+  &copy; {{ 2025 }} Miami University Regionals
+</footer>
     </div>
 
     <!-- Edit Modal -->
