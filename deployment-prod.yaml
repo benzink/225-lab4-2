@@ -11,7 +11,7 @@ spec:
     - ReadWriteMany
   nfs:
     path:  /srv/nfs/roseaw         #local reference
-    server: 10.48.10.140
+    server: 10.48.228.25
   persistentVolumeReclaimPolicy: Retain
 ---
 apiVersion: v1
