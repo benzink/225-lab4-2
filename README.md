@@ -8,3 +8,5 @@ This is an extension of the persistent flask/sqlite3 app and adds in generated d
 4) Start your screencapture. Demonstrate your changes to the code in your video, and show the resulting web page.
 6) Run your pipeline.
 7) Refresh your web page during the test cycle AFTER Deploy Dev Environment, then again AFTER Reset DB, then again AFTER Run Acceptance Tests, and Finally AFTER Remove Test Data. Talk about what happened to the page as you refreshed it.
+
+Your Final project will use the same Jenkins steps as here AT A MINIMUM.
