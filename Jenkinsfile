@@ -63,6 +63,7 @@ pipeline {
         }
         
         stage('ZAP Baseline'){
+            steps {
                 sh """
                     docker run --rm -t owasp/zap2docker-stable zap-baseline.py \
                       -t http://$DEV_SERVICE_HOST:$DEV_SERVICE_PORT -r zap-report.html || true
