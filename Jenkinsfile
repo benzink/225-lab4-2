@@ -71,8 +71,17 @@ pipeline {
                 returnStdout: true
               ).trim()
         
-              // clear data created by the security scan
-              sh "kubectl exec ${appPod} -- python3 data-clear.py"
+              sh """
+                kubectl exec ${appPod} -- python3 - <<'PY'
+                import sqlite3
+                conn = sqlite3.connect('/nfs/demo.db')
+                cur = conn.cursor()
+                cur.execute('DELETE FROM contacts')
+                conn.commit()
+                conn.close()
+                PY
+                """
+
             }
           }
         } 
