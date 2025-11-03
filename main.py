@@ -110,15 +110,46 @@ def index():
     <title>Contacts</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-      body { padding-top: 2rem; }
-      .card { border-radius: 1rem; }
-      .table thead th { position: sticky; top: 0; background: var(--bs-body-bg); z-index: 1; }
-      .form-card { max-width: 780px; }
-      .fade-enter { animation: fadeIn .25s ease-in; }
-      @keyframes fadeIn { from { opacity: .3 } to { opacity: 1 } }
-      .pagination { gap: .25rem; }
-      .mode-toggle { white-space: nowrap; }
-    </style>
+  body {
+    padding-top: 2rem;
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  }
+  .card {
+    border-radius: 0.8rem;
+    border: 1px solid #D7D7D7;
+  }
+  .btn-primary {
+    background-color: #B00B1E !important;
+    border-color: #B00B1E !important;
+  }
+  .btn-primary:hover {
+    background-color: #8E0918 !important;
+    border-color: #8E0918 !important;
+  }
+  .btn-outline-secondary {
+    color: #B00B1E !important;
+    border-color: #B00B1E !important;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #B00B1E !important;
+    color: white !important;
+  }
+  .table thead th {
+    background: var(--bs-body-bg);
+    border-bottom: 2px solid #B00B1E !important;
+  }
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(176, 11, 30, 0.04);
+  }
+  /* Dark mode tweaks */
+  [data-bs-theme="dark"] .card {
+    border: 1px solid #333;
+  }
+  [data-bs-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(176, 11, 30, 0.2);
+  }
+</style>
+
   </head>
   <body>
     <div class="container">
