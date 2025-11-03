@@ -152,7 +152,6 @@ def index():
   [data-bs-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(176, 11, 30, 0.2);
   }
-  /* --- Redhawk Theme Fixes for Remaining Bootstrap Defaults --- */
 /* Miami Branding Fonts */
 .miami-title {
   font-family: 'Oswald', sans-serif;
@@ -234,7 +233,7 @@ h1, h2, h3, .h1, .h2, .h3 {
 </style>
 
 <header class="mb-4 py-3 border-bottom d-flex align-items-center">
-  <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/Miami_Redhawks_logo.svg/2560px-Miami_Redhawks_logo.svg.png"
+  <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/Miami_Redhawks_logo.svg/2560px-Miami_Redhawks_logo.svg"
        alt="Miami RedHawks Logo"
        style="height: 56px; width:auto; margin-right: 18px;">
   <div>
