@@ -18,24 +18,15 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-             steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'roseaw-dockerhub') {
-                        docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}", "-f Dockerfile.build .")
-                    }
-                }
+        stage('Build & Push Docker Image') {
+          steps {
+            script {
+              docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_CREDENTIALS_ID}") {
+                def app = docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}", "-f Dockerfile.build .")
+                app.push()
+              }
             }
-
-        }
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
-                        docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}").push()
-                    }
-                }
-            }
+          }
         }
 
         stage('Deploy to Dev Environment') {
