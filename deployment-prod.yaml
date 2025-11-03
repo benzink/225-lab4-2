@@ -44,6 +44,8 @@ spec:
       labels:
         app: flask
     spec:
+      imagePullSecrets:
+        - name: roseaw-dockerhub
       containers:
         - name: flask
           image: cithit/roseaw:latest
