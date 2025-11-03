@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
         - name: flask
-          image: cithit/roseaw
+          image: cithit/roseaw:latest
           ports:
             - containerPort: 5000
           volumeMounts:
