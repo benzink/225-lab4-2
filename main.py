@@ -105,6 +105,10 @@ def index():
 <!doctype html>
 <html lang="en" data-bs-theme="auto" id="html-root">
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@400;500;600&family=Source+Serif+Pro:wght@400;600&display=swap" rel="stylesheet">
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Contacts</title>
@@ -149,6 +153,39 @@ def index():
     background-color: rgba(176, 11, 30, 0.2);
   }
   /* --- Redhawk Theme Fixes for Remaining Bootstrap Defaults --- */
+/* Miami Branding Fonts */
+.miami-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 1.9rem;
+  line-height: 1.1;
+  color: #B00B1E;
+  text-transform: uppercase;
+}
+
+.miami-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--bs-secondary-color);
+}
+
+/* Standard Body Font */
+body {
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Optional: Section Headers Use Oswald */
+h1, h2, h3, .h1, .h2, .h3 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+}
+
+/* Table and Card Cleanup */
+.card {
+  border-radius: 0.8rem;
+  border: 1px solid #D7D7D7;
+}
 
 /* Toggle Dark Mode Button */
 .btn-outline-primary,
@@ -196,23 +233,16 @@ def index():
 
 </style>
 
-  </head>
-  <body>
-    <div class="container">
-      <header class="d-flex justify-content-between align-items-start mb-4">
-        <div>
-          <h1 class="h3 mb-1">Contacts</h1>
-          <p class="text-secondary mb-0">Add, search, edit, and manage your contacts.</p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <div class="input-group input-group-sm" title="Items per page">
-            <span class="input-group-text">Per page</span>
-            <input id="per-input" type="number" min="1" class="form-control" value="{{ per_page }}">
-            <button id="per-apply" class="btn btn-outline-secondary">Apply</button>
-          </div>
-          <button id="modeBtn" class="btn btn-sm btn-outline-primary mode-toggle" type="button">Toggle dark mode</button>
-        </div>
-      </header>
+<header class="mb-4 py-3 border-bottom d-flex align-items-center">
+  <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/Miami_Redhawks_logo.svg/2560px-Miami_Redhawks_logo.svg.png"
+       alt="Miami RedHawks Logo"
+       style="height: 56px; width:auto; margin-right: 18px;">
+  <div>
+    <div class="miami-title">MIAMI UNIVERSITY</div>
+    <div class="miami-subtitle">Regionals · Computer & Information Technology</div>
+  </div>
+</header>
+
 
       <!-- Flash messages -->
       {% with msgs = get_flashed_messages(with_categories=True) %}
