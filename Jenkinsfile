@@ -21,7 +21,7 @@ pipeline {
         stage('Build Docker Image') {
              steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-creds') {
+                    docker.withRegistry('https://registry.hub.docker.com', 'roseaw-dockerhub') {
                         docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}")
                     }
                 }
