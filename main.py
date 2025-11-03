@@ -148,6 +148,52 @@ def index():
   [data-bs-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(176, 11, 30, 0.2);
   }
+  /* --- Redhawk Theme Fixes for Remaining Bootstrap Defaults --- */
+
+/* Toggle Dark Mode Button */
+.btn-outline-primary,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  color: #B00B1E !important;
+  border-color: #B00B1E !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: #B00B1E !important;
+  border-color: #B00B1E !important;
+  color: white !important;
+}
+
+/* Pagination Controls */
+.page-link {
+  color: #B00B1E !important;
+  border-color: #D7D7D7 !important;
+}
+
+.page-link:hover {
+  background-color: rgba(176, 11, 30, 0.1) !important;
+  border-color: #B00B1E !important;
+  color: #8E0918 !important;
+}
+
+/* Active page */
+.page-item.active .page-link {
+  background-color: #B00B1E !important;
+  border-color: #B00B1E !important;
+  color: white !important;
+}
+
+/* Dark mode pagination */
+[data-bs-theme="dark"] .page-link {
+  color: #FFCDD2 !important; /* Light red tint in dark mode */
+}
+
+[data-bs-theme="dark"] .page-item.active .page-link {
+  background-color: #B00B1E !important;
+  border-color: #B00B1E !important;
+  color: white !important;
+}
+
 </style>
 
   </head>
