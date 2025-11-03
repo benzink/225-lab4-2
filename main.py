@@ -13,6 +13,8 @@ PER_PAGE_DEFAULT = 10
 def get_db():
     db = sqlite3.connect(DATABASE)
     db.row_factory = sqlite3.Row
+    # Help with NFS: avoid immediate lock failures
+    db.execute("PRAGMA busy_timeout = 3000")
     return db
 
 def init_db():
@@ -30,7 +32,7 @@ def init_db():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # POST handlers — PRG pattern
+    # --- POST handlers (PRG pattern) ---
     if request.method == 'POST':
         action = request.form.get('action')
 
@@ -41,6 +43,8 @@ def index():
                 db.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
                 db.commit(); db.close()
                 flash('Contact deleted successfully.', 'success')
+            else:
+                flash('Missing contact id.', 'danger')
             return redirect(url_for('index'))
 
         if action == 'update':
@@ -68,7 +72,7 @@ def index():
             flash('Missing name or phone number.', 'danger')
         return redirect(url_for('index'))
 
-    # GET — pagination
+    # --- GET: pagination params ---
     try:
         page = max(int(request.args.get('page', 1)), 1)
     except ValueError:
@@ -79,6 +83,7 @@ def index():
         per_page = PER_PAGE_DEFAULT
     offset = (page - 1) * per_page
 
+    # --- Query data ---
     db = get_db()
     total = db.execute('SELECT COUNT(*) FROM contacts').fetchone()[0]
     contacts = db.execute(
@@ -91,6 +96,11 @@ def index():
     has_prev = page > 1
     has_next = page < pages
 
+    # Precompute pagination window to avoid Jinja max/min
+    start_page = 1 if page - 2 < 1 else page - 2
+    end_page = pages if page + 2 > pages else page + 2
+
+    # --- Render ---
     return render_template_string("""
 <!doctype html>
 <html lang="en" data-bs-theme="auto" id="html-root">
@@ -226,8 +236,7 @@ def index():
           <li class="page-item {% if not has_prev %}disabled{% endif %}">
             <a class="page-link" href="{{ url_for('index', page=page-1, per=per_page) if has_prev else '#' }}">Previous</a>
           </li>
-          {# show a small window of pages #}
-          {% for p in range(max(1, page-2), min(pages, page+2)+1) %}
+          {% for p in range(start_page, end_page + 1) %}
             <li class="page-item {% if p==page %}active{% endif %}">
               <a class="page-link" href="{{ url_for('index', page=p, per=per_page) }}">{{ p }}</a>
             </li>
@@ -319,7 +328,9 @@ def index():
     """,
     get_flashed_messages=get_flashed_messages,
     contacts=contacts,
-    page=page, pages=pages, per_page=per_page, has_prev=has_prev, has_next=has_next, total=total)
+    page=page, pages=pages, per_page=per_page,
+    has_prev=has_prev, has_next=has_next, total=total,
+    start_page=start_page, end_page=end_page)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
