@@ -7,6 +7,6 @@ This is an extension of the persistent flask/sqlite3 app and adds in generated d
 3) The index.html page is in the templates directory.  You will also edit the Jenkinsfile, deployment-dev.yaml (your nfs directory and the container image), deployment-prod.yaml (your nfs directory, the container image and your load balancer IP) and test_html_elements.py (your cluster IP).
 4) Start your screencapture. Demonstrate your changes to the code in your video, and show the resulting web page.
 6) Run your pipeline.
-7) Refresh your web page during the test cycle AFTER Deploy Dev Environment, then again AFTER Reset DB, then again AFTER Run Acceptance Tests, and Finally AFTER Remove Test Data. Talk about what happened to the page as you refreshed it.
+7) Open a web page and pull up your __ClusterIP__Refresh your web page during the test cycle AFTER Deploy Dev Environment, then again AFTER Reset DB, then again AFTER Run Acceptance Tests, and Finally AFTER Remove Test Data. Talk about what happened to the page as you refreshed it.
 
 Your Final project will use the same Jenkins steps as here AT A MINIMUM.
