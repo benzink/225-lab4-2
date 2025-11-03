@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template_string, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for, flash
 import sqlite3
 import os
 import math
@@ -68,6 +68,7 @@ def index():
             flash('Missing name or phone number.', 'danger')
         return redirect(url_for('index'))
 
+    # GET: pagination
     try:
         page = max(int(request.args.get('page', 1)), 1)
     except ValueError:
@@ -92,230 +93,13 @@ def index():
     start_page = max(1, page - 2)
     end_page = min(pages, page + 2)
 
-    return render_template_string("""
-<!doctype html>
-<html lang="en" data-bs-theme="auto" id="html-root">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contacts</title>
-
-    <!-- Fonts (branding) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 2rem;
-        font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-      }
-      .card { border-radius: 0.8rem; border: 1px solid #D7D7D7; }
-      .btn-primary { background-color: #B00B1E !important; border-color: #B00B1E !important; }
-      .btn-primary:hover { background-color: #8E0918 !important; border-color: #8E0918 !important; }
-      .btn-outline-secondary { color: #B00B1E !important; border-color: #B00B1E !important; }
-      .btn-outline-secondary:hover { background-color: #B00B1E !important; color: #fff !important; }
-      .table thead th { background: var(--bs-body-bg); border-bottom: 2px solid #B00B1E !important; }
-      .table-striped tbody tr:nth-of-type(odd) { background-color: rgba(176, 11, 30, 0.04); }
-      [data-bs-theme="dark"] .card { border: 1px solid #333; }
-      [data-bs-theme="dark"] .table-striped tbody tr:nth-of-type(odd) { background-color: rgba(176, 11, 30, 0.2); }
-
-      .miami-title {
-        font-family: 'Oswald', sans-serif; font-weight: 600; letter-spacing: 1px;
-        font-size: 1.9rem; line-height: 1.1; color: #B00B1E; text-transform: uppercase;
-      }
-      .miami-subtitle { font-family: 'Inter', sans-serif; font-size: 0.95rem; color: var(--bs-secondary-color); }
-
-      h1, h2, h3, .h1, .h2, .h3 { font-family: 'Oswald', sans-serif; font-weight: 500; }
-
-      /* Pagination */
-      .page-link { color: #B00B1E !important; border-color: #D7D7D7 !important; }
-      .page-link:hover { background-color: rgba(176, 11, 30, 0.1) !important; border-color: #B00B1E !important; color: #8E0918 !important; }
-      .page-item.active .page-link { background-color: #B00B1E !important; border-color: #B00B1E !important; color: #fff !important; }
-      [data-bs-theme="dark"] .page-link { color: #FFCDD2 !important; }
-      [data-bs-theme="dark"] .page-item.active .page-link { background-color: #B00B1E !important; border-color: #B00B1E !important; color: #fff !important; }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-
-      <header class="mb-4 py-3 border-bottom d-flex align-items-center">
-        <div>
-          <div class="miami-title">MIAMI UNIVERSITY Regionals</div>
-          <div class="miami-subtitle">Computer & Information Technology</div>
-        </div>
-      </header>
-
-      {% with msgs = get_flashed_messages(with_categories=True) %}
-        {% if msgs %}
-          <div class="mb-3">
-            {% for category, m in msgs %}
-              {% set bs = 'success' if category=='success' else 'danger' if category=='danger' else 'primary' %}
-              <div class="alert alert-{{ bs }} alert-dismissible fade show" role="alert">
-                {{ m }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
-          </div>
-        {% endif %}
-      {% endwith %}
-
-      <div class="card shadow-sm form-card mb-4">
-        <div class="card-body">
-          <h2 class="h5 mb-3">Add Contact</h2>
-          <form method="POST" action="{{ url_for('index') }}" class="row g-3">
-            <input type="hidden" name="action" value="add">
-            <div class="col-md-6">
-              <label for="name" class="form-label">Name</label>
-              <input class="form-control" id="name" name="name" required>
-            </div>
-            <div class="col-md-6">
-              <label for="phone" class="form-label">Phone</label>
-              <input class="form-control" id="phone" name="phone" required
-                     pattern="^[0-9()+\\-\\s]+$" title="Digits, spaces, (), - and + only">
-            </div>
-            <div class="col-12">
-              <button class="btn btn-primary" type="submit">Add Contact</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h2 class="h5 m-0">All Contacts</h2>
-        <input id="filter" class="form-control" style="max-width: 280px;" placeholder="Search…">
-      </div>
-
-      <div class="card shadow-sm mb-3">
-        <div class="table-responsive">
-          <table class="table align-middle mb-0 table-striped">
-            <thead>
-              <tr>
-                <th style="width: 8ch">ID</th>
-                <th style="width: 50%">Name</th>
-                <th style="width: 30%">Phone</th>
-                <th class="text-end" style="width: 12%">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="rows">
-              {% for c in contacts %}
-              <tr>
-                <td class="id text-secondary">{{ c['id'] }}</td>
-                <td class="name">{{ c['name'] }}</td>
-                <td class="phone text-nowrap">{{ c['phone'] }}</td>
-                <td class="text-end">
-                  <div class="d-inline-flex gap-2">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-secondary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#editModal"
-                      data-id="{{ c['id'] }}"
-                      data-name="{{ c['name'] }}"
-                      data-phone="{{ c['phone'] }}"
-                    >Edit</button>
-
-                    <form method="POST" action="{{ url_for('index') }}" onsubmit="return confirm('Delete this contact?')">
-                      <input type="hidden" name="contact_id" value="{{ c['id'] }}">
-                      <input type="hidden" name="action" value="delete">
-                      <button class="btn btn-sm btn-outline-danger">Delete</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
-              {% if not contacts %}
-              <tr><td colspan="4" class="text-center text-secondary py-4">No contacts found.</td></tr>
-              {% endif %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <nav aria-label="Contacts pagination" class="d-flex justify-content-between align-items-center">
-        <div class="text-secondary small">
-          Page <strong>{{ page }}</strong> of <strong>{{ pages }}</strong> · {{ total }} total
-        </div>
-        <ul class="pagination mb-0">
-          <li class="page-item {% if not has_prev %}disabled{% endif %}">
-            <a class="page-link" href="{{ url_for('index', page=page-1, per=per_page) if has_prev else '#' }}">Previous</a>
-          </li>
-          {% for p in range(start_page, end_page + 1) %}
-            <li class="page-item {% if p==page %}active{% endif %}">
-              <a class="page-link" href="{{ url_for('index', page=p, per=per_page) }}">{{ p }}</a>
-            </li>
-          {% endfor %}
-          <li class="page-item {% if not has_next %}disabled{% endif %}">
-            <a class="page-link" href="{{ url_for('index', page=page+1, per=per_page) if has_next else '#' }}">Next</a>
-          </li>
-        </ul>
-      </nav>
-
-      <footer class="py-4 text-center text-secondary small">
-        &copy; {{ 2025 }} Miami University Regionals
-      </footer>
-    </div>
-
-    <!-- Edit Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <form method="POST" action="{{ url_for('index') }}" class="modal-content">
-          <input type="hidden" name="action" value="update">
-          <input type="hidden" name="contact_id" id="edit-id">
-          <div class="modal-header">
-            <h5 class="modal-title">Edit Contact</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body row g-3">
-            <div class="col-12">
-              <label class="form-label">Name</label>
-              <input class="form-control" name="name" id="edit-name" required>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Phone</label>
-              <input class="form-control" name="phone" id="edit-phone" required
-                     pattern="^[0-9()+\\-\\s]+$" title="Digits, spaces, (), - and + only">
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
-            <button class="btn btn-primary" type="submit">Save changes</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Client-side filter
-      const filter = document.getElementById('filter');
-      const rows = document.getElementById('rows');
-      filter?.addEventListener('input', () => {
-        const q = filter.value.toLowerCase();
-        for (const tr of rows.querySelectorAll('tr')) {
-          const name = tr.querySelector('.name')?.textContent.toLowerCase() || '';
-          const phone = tr.querySelector('.phone')?.textContent.toLowerCase() || '';
-          tr.style.display = (name.includes(q) || phone.includes(q)) ? '' : 'none';
-        }
-      });
-
-      // Edit modal populate
-      const editModal = document.getElementById('editModal');
-      editModal?.addEventListener('show.bs.modal', (ev) => {
-        const btn = ev.relatedTarget;
-        document.getElementById('edit-id').value    = btn.getAttribute('data-id');
-        document.getElementById('edit-name').value  = btn.getAttribute('data-name');
-        document.getElementById('edit-phone').value = btn.getAttribute('data-phone');
-      });
-    </script>
-  </body>
-</html>
-    """,
-    contacts=contacts,
-    page=page, pages=pages, per_page=per_page,
-    has_prev=has_prev, has_next=has_next, total=total,
-    start_page=start_page, end_page=end_page)
+    return render_template(
+        'index.html',
+        contacts=contacts,
+        page=page, pages=pages, per_page=per_page,
+        has_prev=has_prev, has_next=has_next, total=total,
+        start_page=start_page, end_page=end_page
+    )
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
