@@ -233,12 +233,9 @@ h1, h2, h3, .h1, .h2, .h3 {
 </style>
 
 <header class="mb-4 py-3 border-bottom d-flex align-items-center">
-  <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/Miami_Redhawks_logo.svg/2560px-Miami_Redhawks_logo.svg"
-       alt="Miami RedHawks Logo"
-       style="height: 56px; width:auto; margin-right: 18px;">
   <div>
-    <div class="miami-title">MIAMI UNIVERSITY</div>
-    <div class="miami-subtitle">Regionals · Computer & Information Technology</div>
+    <div class="miami-title">MIAMI UNIVERSITY Regionals</div>
+    <div class="miami-subtitle">Computer & Information Technology</div>
   </div>
 </header>
 
