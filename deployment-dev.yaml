@@ -10,7 +10,7 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    path:  /srv/nfs/roseaw         #your MiamiID
+    path:  /srv/nfs/benzink         #your MiamiID
     server: 10.48.228.25
   persistentVolumeReclaimPolicy: Retain
 ---
@@ -48,7 +48,7 @@ spec:
         - name: roseaw-dockerhub
       containers:
         - name: flask
-          image: cithit/roseaw:latest    #your MiamiID
+          image: cithit/benzink:latest    #your MiamiID
           ports:
             - containerPort: 5000
           volumeMounts:
